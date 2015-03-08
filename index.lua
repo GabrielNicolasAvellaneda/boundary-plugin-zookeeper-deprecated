@@ -19,19 +19,21 @@ end
 
 function ZookeeperDataSource:fetch(context, callback)
 
-	local client
-	client = net.createConnection(self.port, self.host, function (err)
-
-		if err then self:error('Error creating connection: ' .. err.message) return end 
-
-		client:write('mntr\n')
+	local socket
+	socket = net.createConnection(self.port, self.host, function ()
+		socket:write('mntr\n')
 
 		if callback then
 			client:once('data', function (data)
 				callback(data)
+				socket:shutdown()
 			end)
+		else
+			socket:shutdown()
 		end
+
 		end)
+	socket:on('error', function (err) self:emit('error', 'Socket error: ' .. err.message) end)
 end
 
 local dataSource = ZookeeperDataSource:new(params.host, params.port)
