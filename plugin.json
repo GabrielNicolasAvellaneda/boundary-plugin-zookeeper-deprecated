@@ -1,6 +1,6 @@
 {
     "description": "Metric collector for Zookeeper",
-    "command": "python -u plugin.py",
+    "command": "boundary-meter index.lua",
     "icon" : "icon.png",
     "core_name": "collection1",
     "metrics" : [
@@ -48,7 +48,7 @@
         },
         {
             "title": "Zookeeper Service Host",
-            "name": "service_host",
+            "name": "host",
             "description": "The host used to make TCP connection to the Zookeeper stats API endpoint",
             "type": "string",
             "default": "localhost",
@@ -56,7 +56,7 @@
         },
         {
             "title": "Zookeeper Service Port",
-            "name": "service_port",
+            "name": "port",
             "description": "The port used to make TCP connection to the Zookeeper stats API endpoint",
             "type": "string",
             "default": "2185",
@@ -64,7 +64,7 @@
         },
         {
             "title": "Zookeeper Service Timeout",
-            "name": "service_timeout",
+            "name": "timeout",
             "description": "The timeout value for connecting to the zookeper service",
             "type": "integer",
             "default": 1,

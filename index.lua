@@ -24,7 +24,7 @@ function ZookeeperDataSource:fetch(context, callback)
 		socket:write('mntr\n')
 
 		if callback then
-			client:once('data', function (data)
+			socket:once('data', function (data)
 				callback(data)
 				socket:shutdown()
 			end)
