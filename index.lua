@@ -1,15 +1,17 @@
 local framework = require('framework/framework.lua')
+framework.table()
+framework.util()
+framework.functional()
+local stringutil = framework.string
+
 local Plugin = framework.Plugin
-local NetPlugin = framework.NetPlugin
 local DataSource = framework.DataSource
 local net = require('net')
-local lib = require('lib')
-require('fun')()
+require('fun')(true) -- Shows a warn when overriding an existing function.
 
 local params = framework.boundary.param
 params.name = 'Boundary Zookeeper plugin'
 params.version = '1.0'
-
 
 local ZookeeperDataSource = DataSource:extend()
 function ZookeeperDataSource:initialize(host, port)
@@ -41,7 +43,7 @@ local dataSource = ZookeeperDataSource:new(params.host, params.port)
 local plugin = Plugin:new(params, dataSource)
 
 function parseLine(line)
-	local parts = string.split(line, '\t')
+	local parts = stringutil.split(line, '\t')
 
 	return parts
 end
@@ -55,13 +57,8 @@ function toMapReducer (acc, x)
 	return acc
 end
 
-function notEmpty(str)
-	return not string.isEmpty(str)
-end
-
 function parse(data)
-	local lines = filter(notEmpty, string.split(data, '\n'))
-
+	local lines = filter(stringutil.notEmpty, stringutil.split(data, '\n'))
 	local parsedLines = map(parseLine, lines)
 	local m = reduce(toMapReducer, {}, parsedLines)
 
