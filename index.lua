@@ -6,6 +6,7 @@ local stringutil = framework.string
 
 local Plugin = framework.Plugin
 local DataSource = framework.DataSource
+local Accumulator = framework.Accumulator
 local net = require('net')
 require('fun')(true) -- Shows a warn when overriding an existing function.
 
@@ -65,6 +66,7 @@ function parse(data)
 	return m
 end
 
+local accumulated = Accumulator:new() 
 function plugin:onParseValues(data)
 	
 	local parsed = parse(data)
@@ -83,11 +85,14 @@ function plugin:onParseValues(data)
 
 	local result = {}
 	each(
-		function (boundaryName, accumulate) 
+		function (boundaryName, acc) 
 			local metricName = string.lower(boundaryName) 
+			local value = tonumber(parsed[metricName])
+			if acc then
+				value = accumulated:accumulate(boundaryName, value)
+			end
 
-			result[boundaryName] = tonumber(parsed[metricName])
-	
+			result[boundaryName] = value	
 		end, metrics)
 
 	return result	

@@ -301,4 +301,31 @@ function HttpPlugin:onParseResponse(data)
 	return {}
 end
 
+local Accumulator = Emitter:extend()
+function Accumulator:initialize()
+	self.map = {}
+end
+
+function Accumulator:accumulate(key, value)
+	local oldValue = self.map[key]
+	if oldValue == nil then
+		oldValue = value	
+	end
+
+	self.map[key] = value
+	local diff = value - oldValue
+
+	return diff
+end
+
+function Accumulator:reset(key)
+	self.map[key] = nil
+end
+
+function Accumulator:resetAll()
+	self.map = {}
+end
+
+framework.Accumulator = Accumulator
+
 return framework
