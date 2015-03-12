@@ -14,17 +14,22 @@ local params = framework.boundary.param
 params.name = 'Boundary Zookeeper plugin'
 params.version = '1.0'
 
-local ZookeeperDataSource = DataSource:extend()
-function ZookeeperDataSource:initialize(host, port)
+local NetDataSource = DataSource:extend()
+function NetDataSource:initialize(host, port)
 	self.host = host
 	self.port = port
 end
 
-function ZookeeperDataSource:fetch(context, callback)
+function NetDataSource:onFetch(socket)
+	p('you must override the NetDataSource:onFetch')
+end
+
+function NetDataSource:fetch(context, callback)
 
 	local socket
 	socket = net.createConnection(self.port, self.host, function ()
-		socket:write('mntr\n')
+
+		self:onFetch(socket)
 
 		if callback then
 			socket:once('data', function (data)
@@ -39,9 +44,12 @@ function ZookeeperDataSource:fetch(context, callback)
 	socket:on('error', function (err) self:emit('error', 'Socket error: ' .. err.message) end)
 end
 
-local dataSource = ZookeeperDataSource:new(params.host, params.port)
+local zookeeperDataSource = NetDataSource:new(params.host, params.port)
+function zookeeperDataSource:onFetch(socket)
+	socket:write('mntr\n')
+end
 
-local plugin = Plugin:new(params, dataSource)
+local zookeeperPlugin = Plugin:new(params, zookeeperDataSource)
 
 function parseLine(line)
 	local parts = stringutil.split(line, '\t')
@@ -67,7 +75,7 @@ function parse(data)
 end
 
 local accumulated = Accumulator:new() 
-function plugin:onParseValues(data)
+function zookeeperPlugin:onParseValues(data)
 	
 	local parsed = parse(data)
 		
@@ -98,5 +106,5 @@ function plugin:onParseValues(data)
 	return result	
 end
 
-plugin:poll()
+zookeeperPlugin:poll()
 
