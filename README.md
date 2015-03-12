@@ -1,6 +1,6 @@
 Boundary Zookeeper Plugin
 -----------------------------
-Collects metrics from Zookeeper server.
+Collects metrics from Zookeeper server using the **mntr** command. Take a look at  [Zookeeper Administrator's Guide](http://zookeeper.apache.org/doc/trunk/zookeeperAdmin.html) for details
 
 ### Platforms
 
@@ -18,9 +18,8 @@ In order the plugin to collect statistics from Zookeeper server, it needs access
 
 |Field Name     |Description                                         |
 |:--------------|:---------------------------------------------------|
-|port   |Zookeeper service port -          default: 2181     |
+|port   |Zookeeper service port -          default: 2185 or maybe 2181     |
 |host   |Zookeeper service host -          default: localhost|
-|timeout|Zookeeper service connection timeout -    default: 1|
 |pollInterval   |How often to query the Zookeeper service for metrics|
 
 ### Metrics Collected
