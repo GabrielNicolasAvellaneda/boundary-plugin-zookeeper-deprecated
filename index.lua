@@ -5,7 +5,7 @@ framework.functional()
 local stringutil = framework.string
 
 local Plugin = framework.Plugin
-local DataSource = framework.DataSource
+local NetDataSource = framework.NetDataSource
 local Accumulator = framework.Accumulator
 local net = require('net')
 require('fun')(true) -- Shows a warn when overriding an existing function.
@@ -13,36 +13,6 @@ require('fun')(true) -- Shows a warn when overriding an existing function.
 local params = framework.boundary.param
 params.name = 'Boundary Zookeeper plugin'
 params.version = '1.0'
-
-local NetDataSource = DataSource:extend()
-function NetDataSource:initialize(host, port)
-	self.host = host
-	self.port = port
-end
-
-function NetDataSource:onFetch(socket)
-	p('you must override the NetDataSource:onFetch')
-end
-
-function NetDataSource:fetch(context, callback)
-
-	local socket
-	socket = net.createConnection(self.port, self.host, function ()
-
-		self:onFetch(socket)
-
-		if callback then
-			socket:once('data', function (data)
-				callback(data)
-				socket:shutdown()
-			end)
-		else
-			socket:shutdown()
-		end
-
-		end)
-	socket:on('error', function (err) self:emit('error', 'Socket error: ' .. err.message) end)
-end
 
 local zookeeperDataSource = NetDataSource:new(params.host, params.port)
 function zookeeperDataSource:onFetch(socket)
@@ -107,4 +77,3 @@ function zookeeperPlugin:onParseValues(data)
 end
 
 zookeeperPlugin:poll()
-
